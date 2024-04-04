@@ -1,6 +1,6 @@
 # CMPT 431 Project
 
-Serial, Parallel, and Distributed Implementations of the Minimum Spanning Tree Algorithm
+Serial, Parallel, and Distributed Implementations of the Minimum Spanning Tree Algorithm (Kruskal)
 
 ## Project Tree
 
