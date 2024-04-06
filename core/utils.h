@@ -1,13 +1,15 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "cxxopts.h"
-#include "get_time.h"
+#include <limits.h>
+
 #include <atomic>
 #include <condition_variable>
 #include <iostream>
-#include <limits.h>
 #include <mutex>
+
+#include "cxxopts.h"
+#include "get_time.h"
 
 #define intV int32_t
 #define uintV int32_t
@@ -31,7 +33,8 @@ struct CustomBarrier {
   std::condition_variable my_cv_;
 
   CustomBarrier(int t_num_of_threads)
-      : num_of_threads_(t_num_of_threads), current_waiting_(0),
+      : num_of_threads_(t_num_of_threads),
+        current_waiting_(0),
         barrier_call_(0) {}
 
   void wait() {
@@ -48,6 +51,34 @@ struct CustomBarrier {
     }
     my_cv_.wait(u_lock, [&] { return (c != barrier_call_); });
     //  Condition has been reached. return
+  }
+};
+
+class UnionFind {
+  std::vector<uintV> parent;
+
+ public:
+  UnionFind(int num_of_vertices) : parent(num_of_vertices) {
+    for (int i = 0; i < num_of_vertices; ++i) {
+      parent[i] = i;
+    }
+  }
+
+  int find(uintV vertex) {
+    if (parent[vertex] != vertex) {
+      parent[vertex] = find(parent[vertex]);
+    }
+    return parent[vertex];
+  }
+
+  void merge(uintV vertex1, uintV vertex2) {
+    vertex1 = find(vertex1);
+    vertex2 = find(vertex2);
+    if (vertex1 < vertex2) {
+      parent[vertex2] = vertex1;
+    } else {
+      parent[vertex1] = vertex2;
+    }
   }
 };
 
