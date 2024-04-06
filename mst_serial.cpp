@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <set>
 
 #include "core/graph.h"
 #include "core/utils.h"
@@ -30,13 +31,22 @@ void mst_serial(Graph &g) {
   }
 
   time_taken = t1.stop();
+
   // Print statistics
-  std::cout << "Edges in the MST" << std::endl;
-  std::cout << "From" << "To" << "Weight" << std::endl;
+  std::cout << "Statistics" << std::endl;
+  std::cout << "Total number of vertices in the graph: " << g.n_ << std::endl;
+  std::set<uintV> vertices_in_mst;
   for (auto edge : mst_edges) {
-    std::cout << edge.from << ", " << edge.to << ", " << edge.weight
-              << std::endl;
+    vertices_in_mst.insert(edge.from);
+    vertices_in_mst.insert(edge.to);
   }
+  std::cout << "Number of vertices in the MST: " << vertices_in_mst.size()
+            << std::endl;
+  uintE total_weight = 0;
+  for (auto edge : mst_edges) {
+    total_weight += edge.weight;
+  }
+  std::cout << "Total weight of the MST: " << total_weight << std::endl;
   std::cout << "Time taken (in seconds) : " << time_taken << std::endl;
 }
 
