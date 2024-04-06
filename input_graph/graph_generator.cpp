@@ -5,8 +5,8 @@
 
 #include "../core/utils.h"
 
-#define NUM_OF_VERTICES 100000
-#define NUM_OF_EDGES 50000
+#define NUM_OF_VERTICES 1000
+#define NUM_OF_EDGES 500
 #define MAX_WEIGHT 100
 
 int main() {
