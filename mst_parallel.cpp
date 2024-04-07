@@ -11,25 +11,31 @@
 #include "core/graph.h"
 #include "core/utils.h"
 
+
+#define DEFAULT_NUMBER_OF_THREADS "1"
+#define DEFAULT_FILE_PATH "input_graph/graph.txt"
 std::mutex union_find_mutex;
 
 struct ThreadResult{
     size_t edges_processed;
     uintV weight_sum;
     double time_taken;
-    uintV num_vertices;
-    ThreadResult() : edges_processed(0), weight_sum(0), time_taken(0), num_vertices(0) {}
+    uintV num_edges;
+    ThreadResult() : edges_processed(0), weight_sum(0), time_taken(0), num_edges(0) {}
 };
 
 void mst_parallel_worker(Graph &g, UnionFind &union_find, const std::vector<edge_t> &edges_subset, std::vector<edge_t> &mst_edges_local, ThreadResult &result) {
-    timer t1;
+    
+    timer t1;
     double time_taken = 0.0;
-    t1.start();
+
+    t1.start();
+    
     for (auto &edge : edges_subset) {
         std::lock_guard<std::mutex> guard(union_find_mutex);
         uintV root1 = union_find.find(edge.from);
         uintV root2 = union_find.find(edge.to);
-        result.num_vertices++;
+        result.num_edges++;
         if (root1 != root2) {
             mst_edges_local.push_back(edge);
             union_find.merge(root1, root2);
@@ -37,7 +43,7 @@ void mst_parallel_worker(Graph &g, UnionFind &union_find, const std::vector<edge
             result.weight_sum += edge.weight;
         }
     }
-    result.time_taken = t1.stop();
+    result.time_taken = t1.stop();
 }
 
 void merge_local_msts(std::vector<edge_t> &mst_edges, const std::vector<std::vector<edge_t>> &mst_edges_local, UnionFind &union_find) {
@@ -62,7 +68,7 @@ void merge_local_msts(std::vector<edge_t> &mst_edges, const std::vector<std::vec
     }
 }
 
-void mst_parallel(Graph &g) {
+void mst_parallel(Graph &g, uint n_threads) {
     UnionFind union_find(g.n_);
     std::vector<edge_t> mst_edges;
     timer t1;
@@ -70,23 +76,25 @@ void mst_parallel(Graph &g) {
 
     t1.start();
 
-    size_t num_threads = 4;
+    size_t num_threads = n_threads;
     std::vector<std::thread> threads;
     std::vector<std::vector<edge_t>> mst_edges_local(num_threads);
     std::vector<ThreadResult> results(num_threads);
-    std::vector<UnionFind> union_finds;
-    for(size_t i =0 ; i<num_threads;++i){
-        union_finds.emplace_back(g.n_);
-    }
+    std::vector<UnionFind> union_finds(num_threads, UnionFind(g.n_));
     
-    size_t edges_per_thread = g.edges.size() / num_threads;
-    for (size_t i = 0; i < num_threads; ++i) {
-        size_t start = i * edges_per_thread;
-        size_t end = (i + 1 == num_threads) ? g.edges.size() : start + edges_per_thread;
-        
-        threads.emplace_back(mst_parallel_worker, std::ref(g), std::ref(union_finds[i]), std::vector<edge_t>(g.edges.begin() + start, g.edges.begin() + end), std::ref(mst_edges_local[i]),std::ref(results[i]));
-    }
+    size_t total_edges = g.edges.size();
+    size_t base_edges_per_thread = total_edges / num_threads;
+    size_t remainder = total_edges % num_threads;
 
+    size_t start = 0;
+    for (size_t i = 0; i < num_threads; ++i) {
+        size_t num_edges_assigned = base_edges_per_thread + (i < remainder ? 1 : 0);
+        size_t end = start + num_edges_assigned;
+
+        threads.emplace_back(mst_parallel_worker, std::ref(g), std::ref(union_finds[i]), std::vector<edge_t>(g.edges.begin() + start, g.edges.begin() + end), std::ref(mst_edges_local[i]), std::ref(results[i]));
+
+        start = end;
+    }
     for (auto &thread : threads) {
         thread.join();
     }
@@ -104,7 +112,7 @@ void mst_parallel(Graph &g) {
     }
 
     for(size_t i = 0; i<num_threads; ++i){
-        std::cout<<"Thread " << i << " Process vertices: " << results[i].num_vertices <<": Processed edges: " << results[i].edges_processed << ", Total weight: "<<results[i].weight_sum <<std::endl;
+        std::cout<<"Thread " << i << ": Processed edges: " << results[i].edges_processed << ", Total weight: "<<results[i].weight_sum << ", Time: "<< results[i].time_taken<<std::endl;
     }
 
 
@@ -119,14 +127,31 @@ void mst_parallel(Graph &g) {
     std::cout << "Time taken (in seconds) : " << time_taken << std::endl;
 }
 
-int main() {
+int main(int argc, char *argv[])  {
     Graph g;
-    g.readGraphFromTextFile("input_graph/graph.txt");
+    cxxopts::Options options("MST_Parallel",
+                           "Minimum Spanning Tree Algorithm");
+    options.add_options(
+      "custom",
+      {
+          
+          {"inputFile", "Input file path",
+           cxxopts::value<std::string>()->default_value(DEFAULT_FILE_PATH)},
+          {"nThreads", "Number of threads",
+           cxxopts::value<uint>()->default_value(DEFAULT_NUMBER_OF_THREADS)}
+      });
+    auto cl_options = options.parse(argc, argv);
+    uint n_threads = cl_options["nThreads"].as<uint>();
+    std::string input_file_path = cl_options["inputFile"].as<std::string>();
+    g.readGraphFromTextFile(input_file_path);
     std::sort(
     g.edges.begin(), g.edges.end(),
         [](const edge_t &a, const edge_t &b) { return a.weight < b.weight; });
-
-    mst_parallel(std::ref(g));
+    if(n_threads > g.edges.size()){
+        std::cout<<"nThreads must be less than number of edges!"<<std::endl;
+        return -1;
+    }
+    mst_parallel(std::ref(g), n_threads);
 
     return 0;
 }
