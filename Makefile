@@ -4,18 +4,22 @@ endif
 
 #compiler setup
 CXX = g++
+MPICXX = mpic++
 CXXFLAGS = -std=c++14 -O3 -pthread $(MACRO) 
 
 COMMON= core/utils.h core/cxxopts.h core/get_time.h core/graph.h core/quick_sort.h
-SERIAL= mst_serial
-# PARALLEL= mst_parallel
-ALL= $(SERIAL) $(PARALLEL)
+G++ = mst_serial mst_parallel
+MPI = mst_MPI
+ALL= $(G++) $(MPI)
 
 
 all : $(ALL)
 
-% : %.cpp $(COMMON)
+$(G++): %: %.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
+
+$(MPI): %: %.cpp
+	$(MPICXX) $(CXXFLAGS) -o $@ $<
 
 .PHONY : clean
 
