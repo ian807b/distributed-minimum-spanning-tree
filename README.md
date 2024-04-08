@@ -18,7 +18,8 @@ CMPT431_PROJECT
 │   └── utils.h
 ├── input_graph
 │   ├── graph.txt
-│   └── graph_generator.cpp
+│   ├── graph_generator.cpp
+├── mst_parallel.cpp
 └── mst_serial.cpp
 
 ```

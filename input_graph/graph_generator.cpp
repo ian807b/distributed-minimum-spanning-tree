@@ -1,28 +1,41 @@
-#include <cstdlib>  // For rand() and srand()
-#include <ctime>    // For time()
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include <iostream>
 
 #include "../core/utils.h"
 
-#define NUM_OF_VERTICES 1000
-#define NUM_OF_EDGES 500
-#define MAX_WEIGHT 100
+#define NUM_OF_VERTICES 30
+#define NUM_OF_EDGES 35
+#define MAX_WEIGHT 30
 
 int main() {
-  std::ofstream outputFile("graph.txt");
+  std::ofstream output_file("graph.txt");
 
   srand(time(0));
+
+  // Ensures a "complete" graph
+  for (uintV i = 1; i < NUM_OF_VERTICES; i++) {
+    uintV node1 = i - 1;
+    uintV node2 = i;
+    uintE edge_weight = 1 + (rand() % MAX_WEIGHT);
+    output_file << node1 << " " << node2 << " " << edge_weight << std::endl;
+  }
 
   for (uintE i = 0; i < NUM_OF_EDGES; ++i) {
     uintV node1 = rand() % NUM_OF_VERTICES;
     uintV node2 = rand() % NUM_OF_VERTICES;
-    uintE weight = rand() % MAX_WEIGHT;
 
-    outputFile << node1 << " " << node2 << " " << weight << std::endl;
+    // For optimization, removes a loop
+    while (node1 == node2) {
+      node2 = rand() % NUM_OF_VERTICES;
+    }
+    uintE weight = 1 + (rand() % MAX_WEIGHT);
+
+    output_file << node1 << " " << node2 << " " << weight << std::endl;
   }
 
-  outputFile.close();
+  output_file.close();
 
   return 0;
 }
