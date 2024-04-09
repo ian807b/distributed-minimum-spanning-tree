@@ -7,7 +7,7 @@ typedef struct UndirectWeightedEdge {
   uintV from;
   uintV to;
   uintE weight;
-
+  UndirectWeightedEdge() : from(0), to(0), weight(0) {}
   UndirectWeightedEdge(uintV from_, uintV to_, uintE weight_)
       : from(from_), to(to_), weight(weight_) {}
 } edge_t;
