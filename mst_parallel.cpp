@@ -12,7 +12,6 @@
 #include "core/utils.h"
 
 #define DEFAULT_NUMBER_OF_THREADS "1"
-#define DEFAULT_FILE_PATH "input_graph/graph.txt"
 
 std::mutex union_find_mutex;
 
@@ -20,7 +19,7 @@ struct ThreadResult {
   uintE edges_processed;
   uintV weight_sum;
   double time_taken;
-  uintV num_edges;
+  uintE num_edges;
   ThreadResult()
       : edges_processed(0), weight_sum(0), time_taken(0), num_edges(0) {}
 };
@@ -82,20 +81,19 @@ void mst_parallel(Graph &g, uint n_threads) {
 
   t1.start();
 
-  size_t num_threads = n_threads;
   std::vector<std::thread> threads;
-  std::vector<std::vector<edge_t>> mst_edges_local(num_threads);
-  std::vector<ThreadResult> results(num_threads);
-  std::vector<UnionFind> union_finds(num_threads, UnionFind(g.n_));
+  std::vector<std::vector<edge_t>> mst_edges_local(n_threads);
+  std::vector<ThreadResult> results(n_threads);
+  std::vector<UnionFind> union_finds(n_threads, UnionFind(g.n_));
 
   uintE total_edges = g.edges.size();
-  uintE base_edges_per_thread = total_edges / num_threads;
-  uintE remainder = total_edges % num_threads;
+  uintE base_edges_per_thread = total_edges / n_threads;
+  uintE remainder = total_edges % n_threads;
 
-  size_t start = 0;
-  for (size_t i = 0; i < num_threads; ++i) {
+  uint start = 0;
+  for (uint i = 0; i < n_threads; ++i) {
     uintE num_edges_assigned = base_edges_per_thread + (i < remainder ? 1 : 0);
-    size_t end = start + num_edges_assigned;
+    uint end = start + num_edges_assigned;
 
     threads.emplace_back(
         mst_parallel_worker, std::ref(g), std::ref(union_finds[i]),
@@ -120,7 +118,7 @@ void mst_parallel(Graph &g, uint n_threads) {
     vertices_in_mst.insert(edge.to);
   }
 
-  for (size_t i = 0; i < num_threads; ++i) {
+  for (uint i = 0; i < n_threads; ++i) {
     std::cout << "Thread " << i
               << ": Processed edges: " << results[i].edges_processed
               << ", Total weight: " << results[i].weight_sum
@@ -143,14 +141,11 @@ int main(int argc, char *argv[]) {
   cxxopts::Options options("MST_Parallel", "Minimum Spanning Tree Algorithm");
   options.add_options(
       "custom",
-      {{"inputFile", "Input file path",
-        cxxopts::value<std::string>()->default_value(DEFAULT_FILE_PATH)},
-       {"nThreads", "Number of threads",
+      {{"nThreads", "Number of threads",
         cxxopts::value<uint>()->default_value(DEFAULT_NUMBER_OF_THREADS)}});
   auto cl_options = options.parse(argc, argv);
   uint n_threads = cl_options["nThreads"].as<uint>();
-  std::string input_file_path = cl_options["inputFile"].as<std::string>();
-  g.readGraphFromTextFile(input_file_path);
+  g.readGraphFromTextFile("input_graph/graph.txt");
   if (n_threads > g.edges.size()) {
     std::cout << "nThreads must be less than number of edges!" << std::endl;
     return -1;
