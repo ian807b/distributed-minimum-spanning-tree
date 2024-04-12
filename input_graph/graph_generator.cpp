@@ -5,10 +5,9 @@
 
 #include "../core/utils.h"
 
-#define NUM_OF_VERTICES 10000
-#define NUM_OF_EDGES \
-  (unsigned long long)((NUM_OF_VERTICES / 3) * (NUM_OF_VERTICES - 1) / 2)
-#define MAX_WEIGHT 1000000
+#define NUM_OF_VERTICES 10000000
+#define NUM_OF_EDGES 100000000
+#define MAX_WEIGHT 100000000
 
 int main() {
   std::ofstream output_file("graph.txt");
