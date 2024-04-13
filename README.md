@@ -21,21 +21,20 @@ CMPT431_PROJECT
 ├── mst_MPI.cpp
 ├── mst_parallel.cpp
 └── mst_serial.cpp
-
 ```
 
 ## Graph Generator
 
 This is a simple program to generate a graph in textfile. It uses edge list format:
 
-[node1 node2 weight], the numbers are randomly generated. Running `make` folder from the project root directory will compile graph_generator as well.
+[node1 node2 weight], the numbers are randomly generated. Run `make` from the project root directory to generate the executables for all the programs.
 
 ## How to Run the Program
 
 > [!TIP]
-> Run `make` -> execute `graph_generator`, which creates an input graph -> run each algorithm
+> Run `make` -> execute `graph_generator` from `/input_graph`, which creates an input graph -> run each algorithm
 
-Generate a graph using graph_generator.cpp. You can adjust the number of vertices and the maximum weight of edge. Keep in mind that setting the maximum too high can cause an overflow.
+Above workflow first generates a graph using graph_generator.cpp. You can adjust the number of vertices and the maximum weight of edge. Keep in mind that setting the maximum too high can cause an overflow.
 
 > [!WARNING]
 > Warning: Suggested minimum number of vertices is 10000, but it will take quite a lot of time to generate the text file.
