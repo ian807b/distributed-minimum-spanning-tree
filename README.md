@@ -33,4 +33,10 @@ This is a simple program to generate a graph in textfile. It uses edge list form
 
 ## How to Run the Program
 
-\*\* Generate a graph using graph_generator.cpp. You can adjust the number of vertices and the maximum weight of edge. Keep in mind that setting the maximum too high can cause an overflow.
+Generate a graph using graph_generator.cpp. You can adjust the number of vertices and the maximum weight of edge. Keep in mind that setting the maximum too high can cause an overflow.
+
+Running "make" will compile the program and generate 3 executables.
+
+*** ./mst_serial ***
+*** ./mst_parallel --nThreads 4 ***
+*** mpirun -n 4 ./mst_MPI ***
