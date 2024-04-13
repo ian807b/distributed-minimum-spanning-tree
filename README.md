@@ -37,6 +37,8 @@ Generate a graph using graph_generator.cpp. You can adjust the number of vertice
 
 Running "make" will compile the program and generate 3 executables.
 
+```
 ***./mst_serial***
 ***./mst_parallel --nThreads 4***
 ***mpirun -n 4 ./mst_MPI***
+```
