@@ -19,6 +19,7 @@ CMPT431_PROJECT
 ├── input_graph
 │   ├── graph.txt
 │   ├── graph_generator.cpp
+├── mst_MPI.cpp
 ├── mst_parallel.cpp
 └── mst_serial.cpp
 
@@ -31,3 +32,5 @@ This is a simple program to generate a graph in textfile. It uses edge list form
 [node1 node2 weight], the numbers are randomly generated.
 
 ## How to Run the Program
+
+\*\* Generate a graph using graph_generator.cpp. You can adjust the number of vertices and the maximum weight of edge. Keep in mind that setting the maximum too high can cause an overflow.

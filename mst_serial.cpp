@@ -16,6 +16,10 @@ void mst_serial(Graph &g) {
 
   t1.start();
 
+  std::sort(
+      g.edges.begin(), g.edges.end(),
+      [](const edge_t &a, const edge_t &b) { return a.weight < b.weight; });
+
   for (auto edge : g.edges) {
     uintV root1 = union_find.find(edge.from);
     uintV root2 = union_find.find(edge.to);
@@ -53,9 +57,6 @@ void mst_serial(Graph &g) {
 int main() {
   Graph g;
   g.readGraphFromTextFile("input_graph/graph.txt");
-  std::sort(
-      g.edges.begin(), g.edges.end(),
-      [](const edge_t &a, const edge_t &b) { return a.weight < b.weight; });
 
   mst_serial(std::ref(g));
 

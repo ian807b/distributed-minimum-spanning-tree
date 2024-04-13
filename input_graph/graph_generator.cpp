@@ -7,8 +7,8 @@
 
 #include "../core/utils.h"
 
-#define NUM_OF_VERTICES 100
-#define MAX_WEIGHT 100
+#define NUM_OF_VERTICES 7000
+#define MAX_WEIGHT 5
 
 int main() {
   std::ofstream output_file("graph.txt");
@@ -21,7 +21,7 @@ int main() {
     uintV node1 = i - 1;
     uintV node2 = i;
     uintE edge_weight = 1 + (rand() % MAX_WEIGHT);
-    output_file << node1 << " " << node2 << " " << edge_weight << std::endl;
+    output_file << node1 << " " << node2 << " " << edge_weight << '\n';
     edge_set.insert({std::min(node1, node2), std::max(node1, node2)});
   }
 

@@ -34,7 +34,7 @@ MSTData mst_parallel_worker(Graph &g, const std::vector<edge_t> &edges_subset,
       sorted_edges_subset.begin(), sorted_edges_subset.end(),
       [](const edge_t &a, const edge_t &b) { return a.weight < b.weight; });
 
-  for (const auto &edge : edges_subset) {
+  for (const auto &edge : sorted_edges_subset) {
     uintV root1 = union_find.find(edge.from);
     uintV root2 = union_find.find(edge.to);
     if (root1 != root2) {
