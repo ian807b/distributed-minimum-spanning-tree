@@ -35,6 +35,8 @@ This is a simple program to generate a graph in textfile. It uses edge list form
 
 Generate a graph using graph_generator.cpp. You can adjust the number of vertices and the maximum weight of edge. Keep in mind that setting the maximum too high can cause an overflow.
 
+> Warning: Suggested minimum number of vertices is 10000, but it will take quite a lot of time to generate the text file.
+
 Running "make" will compile the program and generate 3 executables.
 
 Sample commands:
