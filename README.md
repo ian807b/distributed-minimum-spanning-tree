@@ -47,4 +47,19 @@ Sample commands:
 ./mst_serial
 ./mst_parallel --nThreads 4
 mpirun -n 4 ./mst_MPI
+
+Via slurm:
+
+#!/bin/bash
+#
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --ntasks=4
+#SBATCH --partition=slow
+#SBATCH --mem=10G
+
+srun /home/gha42/project/mst_serial
+srun /home/gha42/project/mst_parallel --nThreads 4
+srun -n 4 /home/gha42/project/mst_MPI
+
 ```
