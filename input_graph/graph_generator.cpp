@@ -7,7 +7,7 @@
 
 #include "../core/utils.h"
 
-#define NUM_OF_VERTICES 20000
+#define NUM_OF_VERTICES 1000
 #define MAX_WEIGHT 1000
 
 int main() {
