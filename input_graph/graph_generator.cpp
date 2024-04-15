@@ -7,8 +7,8 @@
 
 #include "../core/utils.h"
 
-#define NUM_OF_VERTICES 7000
-#define MAX_WEIGHT 5
+#define NUM_OF_VERTICES 20000
+#define MAX_WEIGHT 1000
 
 int main() {
   std::ofstream output_file("graph.txt");

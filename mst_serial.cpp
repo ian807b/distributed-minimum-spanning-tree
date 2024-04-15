@@ -16,9 +16,8 @@ void mst_serial(Graph &g) {
 
   t1.start();
 
-  std::sort(
-      g.edges.begin(), g.edges.end(),
-      [](const edge_t &a, const edge_t &b) { return a.weight < b.weight; });
+  std::sort(g.edges.begin(), g.edges.end(),
+            [](edge_t &a, edge_t &b) { return a.weight < b.weight; });
 
   for (auto edge : g.edges) {
     uintV root1 = union_find.find(edge.from);
@@ -37,7 +36,7 @@ void mst_serial(Graph &g) {
   time_taken = t1.stop();
 
   // Print statistics
-  std::cout << "Statistics" << std::endl;
+  std::cout << "Printing statistics..." << std::endl;
   std::cout << "Total number of vertices in the graph: " << g.n_ << std::endl;
   std::set<uintV> vertices_in_mst;
   for (auto edge : mst_edges) {

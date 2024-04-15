@@ -29,9 +29,8 @@ void mst_parallel_worker(Graph &g, UnionFind &union_find,
                          std::vector<edge_t> &mst_edges_local,
                          ThreadResult &result) {
   std::vector<edge_t> sorted_edges_subset = edges_subset;
-  std::sort(
-      sorted_edges_subset.begin(), sorted_edges_subset.end(),
-      [](const edge_t &a, const edge_t &b) { return a.weight < b.weight; });
+  std::sort(sorted_edges_subset.begin(), sorted_edges_subset.end(),
+            [](edge_t &a, edge_t &b) { return a.weight < b.weight; });
 
   timer t1;
   t1.start();
@@ -90,10 +89,10 @@ void mst_parallel(Graph &g, uint n_threads) {
   uintE base_edges_per_thread = total_edges / n_threads;
   uintE remainder = total_edges % n_threads;
 
-  uint start = 0;
-  for (uint i = 0; i < n_threads; ++i) {
+  uintV start = 0;
+  for (uint i = 0; i < n_threads; i++) {
     uintE num_edges_assigned = base_edges_per_thread + (i < remainder ? 1 : 0);
-    uint end = start + num_edges_assigned;
+    uintV end = start + num_edges_assigned;
 
     threads.emplace_back(
         mst_parallel_worker, std::ref(g), std::ref(union_finds[i]),
@@ -110,7 +109,7 @@ void mst_parallel(Graph &g, uint n_threads) {
 
   time_taken = t1.stop();
 
-  std::cout << "Statistics" << std::endl;
+  std::cout << "Printing statistics..." << std::endl;
   std::cout << "Total number of vertices in the graph: " << g.n_ << std::endl;
   std::set<uintV> vertices_in_mst;
   for (auto edge : mst_edges) {
@@ -120,7 +119,7 @@ void mst_parallel(Graph &g, uint n_threads) {
 
   for (uint i = 0; i < n_threads; ++i) {
     std::cout << "Thread " << i
-              << ": Processed edges: " << results[i].edges_processed
+              << ": Edges processed: " << results[i].edges_processed
               << ", Total weight: " << results[i].weight_sum
               << ", Time: " << results[i].time_taken << std::endl;
   }
@@ -145,11 +144,14 @@ int main(int argc, char *argv[]) {
         cxxopts::value<uint>()->default_value(DEFAULT_NUMBER_OF_THREADS)}});
   auto cl_options = options.parse(argc, argv);
   uint n_threads = cl_options["nThreads"].as<uint>();
+
   g.readGraphFromTextFile("input_graph/graph.txt");
+
   if (n_threads > g.edges.size()) {
     std::cout << "nThreads must be less than number of edges!" << std::endl;
     return -1;
   }
+
   mst_parallel(std::ref(g), n_threads);
 
   return 0;
