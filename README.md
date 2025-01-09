@@ -1,4 +1,4 @@
-# CMPT 431 Project
+# Distributed Implementations of MST (CMPT 431 Project)
 
 Serial, Parallel, and Distributed Implementations of the Minimum Spanning Tree Algorithm (Kruskal)
 
